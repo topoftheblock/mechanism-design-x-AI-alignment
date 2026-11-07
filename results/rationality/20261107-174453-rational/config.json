@@ -1,0 +1,24 @@
+{
+  "args": {
+    "biases": "0,0.1,0.2,0.3",
+    "caps": "none,0.5,0.7,0.9",
+    "n_states": 8,
+    "samples": 1,
+    "backend": "rational",
+    "model": "claude-opus-5-5",
+    "effort": "medium",
+    "fallback": true,
+    "noise": 0.02,
+    "framing": "abstract",
+    "explicit_objective": true,
+    "workers": 8,
+    "seed": 0,
+    "yes": false,
+    "out": "results"
+  },
+  "backend": {
+    "backend": "rational",
+    "noise": 0.02,
+    "seed": 0
+  }
+}

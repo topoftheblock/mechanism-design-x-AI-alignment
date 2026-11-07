@@ -1,0 +1,24 @@
+{
+  "args": {
+    "biases": "0,0.1,0.2,0.3",
+    "caps": "none,0.5,0.7,0.9",
+    "n_states": 10,
+    "samples": 3,
+    "backend": "openai",
+    "model": "gpt-4o-mini",
+    "effort": "off",
+    "fallback": true,
+    "noise": 0.0,
+    "framing": "abstract",
+    "explicit_objective": true,
+    "workers": 8,
+    "seed": 0,
+    "yes": true,
+    "out": "results"
+  },
+  "backend": {
+    "backend": "openai",
+    "model": "gpt-4o-mini",
+    "effort": null
+  }
+}

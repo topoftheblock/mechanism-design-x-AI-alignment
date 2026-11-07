@@ -1,0 +1,32 @@
+{
+  "args": {
+    "profiles": "increasing,decreasing,nonmonotone",
+    "arms": "optimal,complete_info,flat,inverted",
+    "grid": "0.5:1.0:0.05",
+    "report_samples": 3,
+    "n_states": 3,
+    "action_backend": "rational",
+    "backend": "openai",
+    "model": "gpt-4o-mini",
+    "effort": "off",
+    "fallback": true,
+    "noise": 0.0,
+    "framing": "abstract",
+    "explicit_objective": true,
+    "workers": 8,
+    "seed": 0,
+    "yes": true,
+    "out": "results"
+  },
+  "backend": {
+    "backend": "openai",
+    "model": "gpt-4o-mini",
+    "effort": null
+  },
+  "action_backend": {
+    "backend": "rational",
+    "noise": 0.0,
+    "seed": 0
+  },
+  "thetas": "[0.637  0.2698 0.041 ]"
+}

@@ -99,3 +99,46 @@ def test_anthropic_backend_refusal_recorded(tmp_path, monkeypatch):
     be, _ = _fake_backend(tmp_path, monkeypatch, "", stop_reason="refusal")
     d = be.decide(ActionTask(theta=0.6, b=0.2))
     assert d.value is None and d.meta["refusal"]
+
+
+class _FakeResponses:
+    def __init__(self, text, refusal=False, status="completed"):
+        self.text, self.refusal, self.status, self.calls = text, refusal, status, []
+
+    def create(self, **req):
+        from types import SimpleNamespace as NS
+        self.calls.append(req)
+        part = NS(type="refusal", refusal="no") if self.refusal else NS(type="output_text", text=self.text)
+        return NS(status=self.status, model=req["model"], incomplete_details=None,
+                  usage=NS(input_tokens=10, output_tokens=5),
+                  output=[NS(type="reasoning"), NS(type="message", content=[part])],
+                  output_text="" if self.refusal else self.text)
+
+
+def _fake_openai(tmp_path, monkeypatch, **kw):
+    from types import SimpleNamespace as NS
+    from mdx.backends import OpenAIBackend
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    be = OpenAIBackend(cache_dir=tmp_path / "cache")
+    fake = _FakeResponses(**kw)
+    be.client = NS(responses=fake)
+    return be, fake
+
+
+def test_openai_backend_request_parse_and_cache(tmp_path, monkeypatch):
+    be, fake = _fake_openai(tmp_path, monkeypatch, text='{"rationale": "certify truthfully", "value": 0.8}')
+    task = ReportTask(c=0.8, b=0.1, grid=(0.5, 0.6, 0.7, 0.8, 0.9), schedule=(0.5, 0.6, 0.7, 0.8, 0.9))
+    d = be.decide(task)
+    assert d.feasible_value == 0.8 and not d.infeasible
+    req = fake.calls[0]
+    assert req["model"] == "gpt-5.5" and req["reasoning"] == {"effort": "medium"}
+    assert req["text"]["format"]["strict"] is True and req["text"]["format"]["schema"] == prompts.SCHEMA
+    assert be.decide(task).meta["cached"] and len(fake.calls) == 1
+
+
+def test_openai_backend_refusal_and_incomplete(tmp_path, monkeypatch):
+    be, _ = _fake_openai(tmp_path, monkeypatch, text="", refusal=True)
+    assert be.decide(ActionTask(theta=0.5, b=0.1)).meta["refusal"]
+    be2, _ = _fake_openai(tmp_path / "b", monkeypatch, text="", status="incomplete")
+    d = be2.decide(ActionTask(theta=0.5, b=0.1))
+    assert d.value is None and d.meta["error"].startswith("incomplete")

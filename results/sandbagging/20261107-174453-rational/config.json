@@ -1,0 +1,32 @@
+{
+  "args": {
+    "profiles": "increasing,decreasing,nonmonotone",
+    "arms": "optimal,complete_info,flat,inverted",
+    "grid": "0.5:1.0:0.05",
+    "report_samples": 1,
+    "n_states": 3,
+    "action_backend": "same",
+    "backend": "rational",
+    "model": "claude-opus-5-5",
+    "effort": "medium",
+    "fallback": true,
+    "noise": 0.0,
+    "framing": "abstract",
+    "explicit_objective": true,
+    "workers": 8,
+    "seed": 0,
+    "yes": false,
+    "out": "results"
+  },
+  "backend": {
+    "backend": "rational",
+    "noise": 0.0,
+    "seed": 0
+  },
+  "action_backend": {
+    "backend": "rational",
+    "noise": 0.0,
+    "seed": 0
+  },
+  "thetas": "[0.637  0.2698 0.041 ]"
+}

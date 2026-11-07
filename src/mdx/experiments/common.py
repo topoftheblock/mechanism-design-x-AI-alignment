@@ -16,10 +16,14 @@ from ..backends import Backend, make_backend
 
 def add_backend_args(p: argparse.ArgumentParser) -> None:
     g = p.add_argument_group("agent backend")
-    g.add_argument("--backend", choices=["rational", "anthropic"], default="rational",
-                   help="rational = exact best responder (free, offline); anthropic = Claude via the API")
-    g.add_argument("--model", default="claude-opus-5-5", help="Claude model id (anthropic backend)")
-    g.add_argument("--effort", default="medium", choices=["low", "medium", "high", "xhigh", "max"])
+    g.add_argument("--backend", choices=["rational", "anthropic", "openai"], default="rational",
+                   help="rational = exact best responder (free, offline); anthropic = Claude; openai = OpenAI")
+    g.add_argument("--model", default=None,
+                   help="model id (default: claude-opus-5-5 for anthropic, gpt-5.5 for openai)")
+    g.add_argument("--effort", default="medium",
+                   choices=["off", "none", "minimal", "low", "medium", "high", "xhigh", "max"],
+                   help="reasoning effort; 'off' omits it (OpenAI models without reasoning). "
+                        "none/minimal are OpenAI-only")
     g.add_argument("--no-fallback", dest="fallback", action="store_false",
                    help="disable server-side refusal fallback to another model")
     g.add_argument("--noise", type=float, default=0.0, help="action noise s.d. (rational backend only)")
@@ -41,7 +45,8 @@ def confirm_spend(args: argparse.Namespace, n_calls: int) -> None:
     """API calls cost money: show the count and ask before spending (cached calls are free)."""
     if args.backend == "rational":
         return
-    print(f"About to make up to {n_calls} calls to {args.model} (effort={args.effort}). "
+    print(f"About to make up to {n_calls} calls to {args.backend}:{args.model or 'default model'} "
+          f"(effort={args.effort}). "
           "Previously cached calls are not re-billed.")
     if args.yes:
         return
